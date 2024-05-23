@@ -11,6 +11,8 @@ const App = () => {
   const [myBalance, setMyBalance] = useState();
   const [sendAddress, setSendAddress] = useState("");
   const [sendToken, setSendToken] = useState("");
+  const [checkAddress, setCheckAddress] = useState("");
+  const [checkToken, setCheckToken] = useState();
 
   const onClickMetamask = async () => {
     try {
@@ -78,6 +80,18 @@ const App = () => {
     }
   };
 
+  const onClickCheckToken = async () => {
+    try {
+      if (!checkAddress) return;
+
+      const result = await contract.balanceOf(checkAddress);
+
+      setCheckToken(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getSymbol = async () => {
     try {
       const response = await contract.symbol();
@@ -129,7 +143,7 @@ const App = () => {
             <div className="flex w-full">
               <div className="box-style grow">
                 {totalSupply
-                  ? `총 발행량: ${formatEther(totalSupply)}${symbol}`
+                  ? `총 발행량: ${formatEther(totalSupply)} ${symbol}`
                   : "총 발행량 확인"}
               </div>
               <button
@@ -150,7 +164,7 @@ const App = () => {
             <div className="flex w-full">
               <div className="box-style grow">
                 {myBalance
-                  ? `내 보유 토큰: ${formatEther(myBalance)}${symbol}`
+                  ? `내 보유 토큰: ${formatEther(myBalance)} ${symbol}`
                   : "내 보유 토큰 확인"}
               </div>
               <button className="button-style ml-4" onClick={onClickMyBalance}>
@@ -175,7 +189,27 @@ const App = () => {
                   onChange={(e) => setSendToken(e.target.value)}
                 />
               </div>
-              <button className="button-style " onClick={onClickSendToken}>
+              <button className="button-style ml-4" onClick={onClickSendToken}>
+                확인
+              </button>
+            </div>
+            <div className="flex w-full items-end">
+              <div className="flex flex-col gap-2 grow">
+                <div className="ml-1 text-lg font-bold">토큰 확인</div>
+                <input
+                  className="input-style"
+                  type="text"
+                  placeholder="지갑 주소"
+                  value={checkAddress}
+                  onChange={(e) => setCheckAddress(e.target.value)}
+                />
+                {checkToken && (
+                  <div className="box-style">{`현재 보유 토큰: ${formatEther(
+                    checkToken
+                  )} ${symbol}`}</div>
+                )}
+              </div>
+              <button className="button-style ml-4" onClick={onClickCheckToken}>
                 확인
               </button>
             </div>
